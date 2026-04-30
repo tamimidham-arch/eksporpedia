@@ -14,12 +14,14 @@
         .card-modern:hover { transform: translateY(-4px); box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.12); }
         .btn-primary { background: linear-gradient(135deg, #0f6b7a 0%, #1a8f7a 100%); color: white; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary:hover { transform: scale(0.98); box-shadow: 0 8px 20px rgba(15, 107, 122, 0.3); }
-        .btn-outline { background: transparent; border: 1.5px solid #0f6b7a; color: #0f6b7a; padding: 10px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; }
+        .btn-outline { background: transparent; border: 1.5px solid #0f6b7a; color: #0f6b7a; padding: 10px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .btn-outline:hover { background: #e0f2f5; }
+        .btn-secondary { background: #e2e8f0; color: #1a3b3f; border: none; padding: 10px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; }
         .nav-modern { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(15, 107, 122, 0.15); position: sticky; top: 0; z-index: 100; }
         .nav-container { max-width: 1280px; margin: 0 auto; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
         .logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(125deg, #0f6b7a, #2c9c6e); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
-        .nav-btn { background: transparent; border: none; padding: 10px 20px; border-radius: 40px; font-weight: 500; color: #2d5a62; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .nav-btn { background: transparent; border: none; padding: 10px 20px; border-radius: 40px; font-weight: 500; color: #2d5a62; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .nav-btn.active { background: #0f6b7a15; color: #0f6b7a; font-weight: 600; }
         .container { max-width: 1280px; margin: 0 auto; padding: 32px 24px 64px; }
         .phases-container { display: flex; flex-wrap: wrap; gap: 18px; margin: 32px 0; justify-content: center; }
@@ -31,9 +33,11 @@
         .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e0f2f5; border-top: 3px solid #0f6b7a; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .hidden-page { display: none; }
-        .toast-msg { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e2a32; color: white; padding: 12px 28px; border-radius: 60px; font-size: 0.85rem; z-index: 1000; white-space: nowrap; }
+        .toast-msg { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e2a32; color: white; padding: 12px 28px; border-radius: 60px; font-size: 0.85rem; z-index: 1000; white-space: nowrap; animation: fadeInOut 2.5s ease; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateX(-50%) translateY(20px); } 15% { opacity: 1; transform: translateX(-50%) translateY(0); } 85% { opacity: 1; } 100% { opacity: 0; } }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { background: white; border-radius: 32px; padding: 32px; max-width: 450px; width: 90%; }
+        .progress-badge { background: #e0f2f1; border-radius: 20px; padding: 8px 16px; font-size: 0.8rem; }
         @media (max-width: 700px) { .phase-card { min-width: 110px; } .nav-btn span { display: none; } .nav-btn i { font-size: 1.4rem; } }
         footer { background: #0e2a2e; border-radius: 32px 32px 0 0; padding: 32px; text-align: center; color: #9ab3b0; margin-top: 64px; }
     </style>
@@ -49,6 +53,7 @@
             <button class="nav-btn" data-page="incoterms"><i class="fas fa-scale-balanced"></i> <span>Incoterms</span></button>
             <button class="nav-btn" data-page="doccheck"><i class="fas fa-file-alt"></i> <span>Cek Dokumen</span></button>
             <button class="nav-btn" data-page="hscode"><i class="fas fa-microchip"></i> <span>AI HS Code</span></button>
+            <button class="nav-btn" data-page="analytics"><i class="fas fa-chart-line"></i> <span>Analisis</span></button>
         </div>
     </div>
 </div>
@@ -65,7 +70,7 @@
                 <button id="newUserBtn" class="btn-primary" style="flex:1;"><i class="fas fa-plus"></i> Buat ID Baru</button>
             </div>
             <hr style="margin: 20px 0;">
-            <p style="font-size: 12px; color: #999;">ID tersimpan di Google Cloud. Progress tidak akan hilang.</p>
+            <p style="font-size: 12px; color: #999;"><i class="fas fa-cloud"></i> ID tersimpan di Google Cloud. Progress tidak akan hilang.</p>
         </div>
     </div>
 
@@ -75,11 +80,14 @@
             <h1 style="font-size: 2.5rem;">✨ Perjalanan Ekspor Pertamamu</h1>
             <p style="margin: 16px 0; color: #366e6e;">Progres tersimpan di Cloud. Lanjutkan kapan saja dengan User ID-mu!</p>
             <div style="margin-top: 20px;">
-                <div id="userInfoHome" style="background: #e0f2f1; border-radius: 24px; padding: 16px; margin-bottom: 20px;">
-                    <i class="fas fa-user-circle"></i> <strong id="displayUserId">Belum login</strong>
-                    <button id="logoutBtnHome" class="btn-outline" style="margin-left: 12px; padding: 4px 12px; font-size: 12px;">Ganti ID</button>
+                <div id="userInfoHome" style="background: #e0f2f1; border-radius: 24px; padding: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <span><i class="fas fa-user-circle"></i> <strong id="displayUserId">Belum login</strong></span>
+                    <button id="logoutBtnHome" class="btn-secondary" style="padding: 6px 16px;"><i class="fas fa-exchange-alt"></i> Ganti ID</button>
                 </div>
-                <button class="btn-primary" id="goToRoadmapHome"><i class="fas fa-map"></i> Lanjutkan Ekspor</button>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button id="goToRoadmapHome" class="btn-primary"><i class="fas fa-map"></i> Lanjutkan Ekspor</button>
+                    <button id="saveManualBtn" class="btn-outline"><i class="fas fa-cloud-upload-alt"></i> Simpan ke Cloud</button>
+                </div>
             </div>
         </div>
         <div style="display: flex; gap: 20px; margin-top: 36px; flex-wrap: wrap;">
@@ -91,9 +99,9 @@
 
     <!-- ROADMAP PAGE -->
     <div id="roadmapPage" class="hidden-page">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <h2><i class="fas fa-map-marked-alt"></i> Roadmap 7 Fase</h2>
-            <div><strong>User ID: <span id="roadmapUserId">-</span></strong></div>
+            <div class="progress-badge"><strong>User ID:</strong> <span id="roadmapUserId">-</span></div>
         </div>
         <div class="phases-container" id="phasesGrid"></div>
         <div id="phaseDetailPanel" class="card-modern" style="margin-top: 32px;"></div>
@@ -103,7 +111,7 @@
         </div>
     </div>
 
-    <!-- INCOTERMS PAGE (sama seperti sebelumnya) -->
+    <!-- INCOTERMS PAGE -->
     <div id="incotermsPage" class="hidden-page">
         <h2><i class="fas fa-scale-balanced"></i> Incoterms Visual</h2>
         <div class="card-modern" style="margin-top: 24px;">
@@ -112,51 +120,83 @@
                 <button class="btn-outline incotermPick" data-term="FOB">✨ FOB (Rekomendasi)</button>
                 <button class="btn-outline incotermPick" data-term="CIF">CIF</button>
                 <button class="btn-outline incotermPick" data-term="CFR">CFR</button>
+                <button class="btn-outline incotermPick" data-term="FCA">FCA</button>
             </div>
             <div id="incotermVisual" style="background: #eef5f2; border-radius: 48px; padding: 28px;">
                 <div style="display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex:1; text-align: center;"><i class="fas fa-building" style="font-size: 2rem;"></i><br><strong>Penjual</strong><br><span id="sellerRiskText">Biaya & risiko sampai pelabuhan asal</span></div>
+                    <div style="flex:1; text-align: center;"><i class="fas fa-building" style="font-size: 2rem;"></i><br><strong>Penjual (Kamu)</strong><br><span id="sellerRiskText" style="font-size: 0.9rem;">-</span></div>
                     <div style="font-size: 2rem;">🚢➡️</div>
-                    <div style="flex:1; text-align: center;"><i class="fas fa-globe" style="font-size: 2rem;"></i><br><strong>Pembeli</strong><br><span id="buyerRiskText">Setelah kapal berlayar</span></div>
+                    <div style="flex:1; text-align: center;"><i class="fas fa-globe" style="font-size: 2rem;"></i><br><strong>Pembeli (Buyer)</strong><br><span id="buyerRiskText" style="font-size: 0.9rem;">-</span></div>
                 </div>
-                <div style="margin-top: 28px;"><strong id="incotermSelected">FOB</strong><p id="incotermDetail"></p></div>
+                <div style="margin-top: 28px; background: white; border-radius: 24px; padding: 20px;">
+                    <strong id="incotermSelected">FOB</strong>
+                    <p id="incotermDetail" style="margin-top: 8px; color: #475569;"></p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- DOKUMEN CHECKER -->
     <div id="doccheckPage" class="hidden-page">
-        <h2><i class="fas fa-file-signature"></i> Cek Konsistensi Data</h2>
+        <h2><i class="fas fa-file-signature"></i> Cek Konsistensi Data Dokumen</h2>
         <div class="card-modern">
+            <p style="margin-bottom: 16px; color: #666;">Pastikan data di Invoice, Packing List, dan PEB <strong>sama persis</strong>!</p>
             <input type="text" id="docName" placeholder="Nama barang" style="width:100%; padding: 14px; border-radius: 60px; border:1px solid #cce3e2; margin-bottom:16px;">
-            <div style="display:flex; gap: 12px; flex-wrap:wrap;">
+            <div style="display:flex; gap: 12px; flex-wrap:wrap; margin-bottom: 16px;">
                 <input type="number" id="docQty" placeholder="Qty" style="flex:1; padding:12px; border-radius:60px; border:1px solid #cce3e2;">
                 <input type="number" id="docWeight" placeholder="Berat (kg)" style="flex:1; padding:12px; border-radius:60px; border:1px solid #cce3e2;">
                 <input type="number" id="docValue" placeholder="Nilai (USD)" style="flex:1; padding:12px; border-radius:60px; border:1px solid #cce3e2;">
             </div>
-            <button id="checkDocBtnDetail" class="btn-primary" style="margin-top: 24px;"><i class="fas fa-check-circle"></i> Periksa Konsistensi</button>
+            <button id="checkDocBtnDetail" class="btn-primary" style="width:100%;"><i class="fas fa-check-circle"></i> Periksa Konsistensi</button>
             <div id="docResultPanel" style="margin-top: 28px;"></div>
+        </div>
+        <div class="card-modern" style="margin-top: 24px;">
+            <h4><i class="fas fa-tips"></i> Tips Penting</h4>
+            <ul style="margin-left: 20px; margin-top: 12px; color: #475569;">
+                <li>Nama barang harus sama persis di semua dokumen</li>
+                <li>Jumlah dan berat harus sinkron</li>
+                <li>Nilai jangan beda antara Invoice dan PEB</li>
+                <li>Perbedaan sekecil apapun bisa menyebabkan penundaan ekspor!</li>
+            </ul>
         </div>
     </div>
 
     <!-- AI HS CODE -->
     <div id="hscodePage" class="hidden-page">
-        <h2><i class="fas fa-brain"></i> Pencarian HS Code dengan AI</h2>
+        <h2><i class="fas fa-brain"></i> Pencarian HS Code & Lartas</h2>
         <div class="card-modern">
-            <input type="text" id="aiHsInput" placeholder="Contoh: keripik pisang organik" style="width:100%; padding: 14px; border-radius: 60px; border:1px solid #cce3e2;">
-            <button id="aiSearchBtn" class="btn-primary" style="margin-top: 16px;"><i class="fas fa-robot"></i> Cari HS Code</button>
+            <p>Masukkan nama barang untuk estimasi HS Code dan cek status Lartas:</p>
+            <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+                <input type="text" id="aiHsInput" placeholder="Contoh: kopi bubuk, udang beku, keripik pisang" style="flex:3; padding: 14px; border-radius: 60px; border:1px solid #cce3e2;">
+                <button id="aiSearchBtn" class="btn-primary"><i class="fas fa-robot"></i> Cari</button>
+            </div>
             <div id="aiResult" style="margin-top: 24px;"></div>
+            <div style="margin-top: 20px; background: #f0f7ff; border-radius: 20px; padding: 16px;">
+                <i class="fas fa-external-link-alt"></i> <strong>Cek resmi di portal pemerintah:</strong><br>
+                <a href="https://insw.go.id/intr" target="_blank" style="color: #0f6b7a;">🔗 INSW INTR</a> | 
+                <a href="https://www.beacukai.go.id/btki.html" target="_blank" style="color: #0f6b7a;">🔗 BTKI Bea Cukai</a> |
+                <a href="https://inatrade.kemendag.go.id" target="_blank" style="color: #0f6b7a;">🔗 INATRADE Kemendag</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICS PAGE -->
+    <div id="analyticsPage" class="hidden-page">
+        <h2><i class="fas fa-chart-line"></i> Analisis Progress Ekspor</h2>
+        <div class="card-modern" id="analyticsContent">
+            <p>Loading data...</p>
         </div>
     </div>
 </div>
+
 <footer>
     <i class="fas fa-cloud"></i> Progress tersimpan otomatis di Google Sheets • ExporPedia
 </footer>
 
 <script>
 // ==================== KONFIGURASI ====================
-// GANTI DENGAN URL DEPLOYMENT GOOGLE APPS SCRIPT KAMU!
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxyN8SAHqW1WPL2ioGiXHNP6x3ZwIEkb0rxnjhiJQHYUZOpktbBD8wcYkMjnURJlezkPg/exec";
+// ⚠️ GANTI DENGAN URL DEPLOYMENT GOOGLE APPS SCRIPT KAMU! ⚠️
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFqZa9bCYM6gR20NYXud-8hZWFS_bvXFf11ckNCYPl-TSe2iknms6tfIzp0AmooRmWOw/exec";
 
 // ==================== GLOBAL STATE ====================
 let currentUserId = null;
@@ -165,78 +205,130 @@ let faseStartTimes = {1:null,2:null,3:null,4:null,5:null,6:null,7:null};
 let faseCompleteTimes = {1:null,2:null,3:null,4:null,5:null,6:null,7:null};
 let currentFase = 1;
 
-// ==================== FUNGSI GOOGLE SHEETS API ====================
-async function callGoogleAppsScript(action, data = {}) {
-    try {
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ payload: JSON.stringify({ action, ...data, userId: currentUserId }) })
-        });
-        // Karena mode no-cors, kita tidak bisa baca response. Gunakan pendekatan JSONP atau ubah CORS
-        // Untuk demo, kita simulasi sukses
-        return { success: true };
-    } catch (error) {
-        console.error("Error:", error);
-        return { success: false, error: error.message };
-    }
+// ==================== FUNGSI GOOGLE SHEETS API (JSONP) ====================
+function callGoogleAppsScript(action, data = {}, userIdParam = null) {
+    return new Promise((resolve, reject) => {
+        const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        const params = new URLSearchParams();
+        params.append('callback', callbackName);
+        params.append('action', action);
+        
+        if (action === 'save') {
+            params.append('userId', data.userId || currentUserId || '');
+            params.append('fase1CompleteAt', data.fase1CompleteAt || '');
+            params.append('fase2CompleteAt', data.fase2CompleteAt || '');
+            params.append('fase3CompleteAt', data.fase3CompleteAt || '');
+            params.append('fase4CompleteAt', data.fase4CompleteAt || '');
+            params.append('fase5CompleteAt', data.fase5CompleteAt || '');
+            params.append('fase6CompleteAt', data.fase6CompleteAt || '');
+            params.append('fase7CompleteAt', data.fase7CompleteAt || '');
+            params.append('fase1StartAt', data.fase1StartAt || '');
+            params.append('fase2StartAt', data.fase2StartAt || '');
+            params.append('fase3StartAt', data.fase3StartAt || '');
+            params.append('fase4StartAt', data.fase4StartAt || '');
+            params.append('fase5StartAt', data.fase5StartAt || '');
+            params.append('fase6StartAt', data.fase6StartAt || '');
+            params.append('fase7StartAt', data.fase7StartAt || '');
+        } else if (action === 'load') {
+            params.append('userId', userIdParam || data.userId || currentUserId || '');
+        }
+        
+        const script = document.createElement('script');
+        script.src = `${SCRIPT_URL}?${params.toString()}`;
+        script.onerror = () => { delete window[callbackName]; document.body.removeChild(script); reject(new Error('Network error')); };
+        
+        window[callbackName] = (response) => {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(response);
+        };
+        document.body.appendChild(script);
+    });
 }
 
-// Simpan semua progres ke cloud
 async function saveToCloud() {
-    if (!currentUserId) return showToast("Login dulu ya!");
+    if (!currentUserId) { showToast("Login dulu ya!", "warning"); return false; }
+    showToast("💾 Menyimpan ke cloud...", "info");
     
-    showToast("Menyimpan ke cloud...");
     const payload = {
-        action: "save",
         userId: currentUserId,
-        fase1CompleteAt: faseCompleteTimes[1],
-        fase2CompleteAt: faseCompleteTimes[2],
-        fase3CompleteAt: faseCompleteTimes[3],
-        fase4CompleteAt: faseCompleteTimes[4],
-        fase5CompleteAt: faseCompleteTimes[5],
-        fase6CompleteAt: faseCompleteTimes[6],
-        fase7CompleteAt: faseCompleteTimes[7]
+        fase1CompleteAt: faseCompleteTimes[1] || "",
+        fase2CompleteAt: faseCompleteTimes[2] || "",
+        fase3CompleteAt: faseCompleteTimes[3] || "",
+        fase4CompleteAt: faseCompleteTimes[4] || "",
+        fase5CompleteAt: faseCompleteTimes[5] || "",
+        fase6CompleteAt: faseCompleteTimes[6] || "",
+        fase7CompleteAt: faseCompleteTimes[7] || "",
+        fase1StartAt: faseStartTimes[1] || "",
+        fase2StartAt: faseStartTimes[2] || "",
+        fase3StartAt: faseStartTimes[3] || "",
+        fase4StartAt: faseStartTimes[4] || "",
+        fase5StartAt: faseStartTimes[5] || "",
+        fase6StartAt: faseStartTimes[6] || "",
+        fase7StartAt: faseStartTimes[7] || ""
     };
     
-    await callGoogleAppsScript("save", payload);
-    showToast("✅ Tersimpan ke Google Cloud!");
+    try {
+        const result = await callGoogleAppsScript("save", payload);
+        if (result && result.success) {
+            showToast("✅ Tersimpan ke Google Cloud!", "success");
+            return true;
+        } else {
+            showToast("⚠️ Gagal: " + (result?.error || "Unknown"), "error");
+            return false;
+        }
+    } catch (error) {
+        showToast("❌ Koneksi gagal. Cek URL deployment!", "error");
+        return false;
+    }
 }
 
-// Load dari cloud
 async function loadFromCloud(userId) {
-    showToast("Loading data...");
-    const result = await callGoogleAppsScript("load", { userId });
-    if (result.success && result.userData) {
-        // Restore faseCompleteTimes
-        for (let i = 1; i <= 7; i++) {
-            if (result.userData[`fase${i}CompleteAt`]) {
-                faseCompleteTimes[i] = result.userData[`fase${i}CompleteAt`];
-                // Jika fase sudah selesai, centang semua checklist
-                for (let j = 0; j < 4; j++) faseChecklists[i][j] = true;
+    showToast("📡 Mengambil data dari cloud...", "info");
+    try {
+        const result = await callGoogleAppsScript("load", null, userId);
+        if (result && result.success && result.userData) {
+            const data = result.userData;
+            for (let i = 1; i <= 7; i++) {
+                const completeTime = data[`fase${i}CompleteAt`];
+                const startTime = data[`fase${i}StartAt`];
+                if (completeTime && completeTime !== "") {
+                    faseCompleteTimes[i] = completeTime;
+                    for (let j = 0; j < 4; j++) faseChecklists[i][j] = true;
+                }
+                if (startTime && startTime !== "") faseStartTimes[i] = startTime;
             }
+            saveChecklistState();
+            renderPhasesGrid();
+            renderPhaseDetail(currentFase);
+            showToast(`✅ Data dimuat!`, "success");
+            return true;
+        } else {
+            showToast("ℹ️ User ID baru. Progress akan dimulai dari awal.", "info");
+            return false;
         }
-        saveChecklistState();
-        renderPhasesGrid();
-        renderPhaseDetail(currentFase);
-        return true;
+    } catch (error) {
+        showToast("❌ Gagal load data.", "error");
+        return false;
     }
-    return false;
 }
 
 // ==================== FUNGSI UTAMA ====================
 function generateUserId() {
-    return "EXP_" + Date.now() + "_" + Math.random().toString(36).substr(2, 6);
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `EXP_${timestamp}_${random}`;
 }
 
 function saveChecklistState() {
+    if (!currentUserId) return;
     localStorage.setItem(`expor_${currentUserId}_checklists`, JSON.stringify(faseChecklists));
     localStorage.setItem(`expor_${currentUserId}_startTimes`, JSON.stringify(faseStartTimes));
     localStorage.setItem(`expor_${currentUserId}_completeTimes`, JSON.stringify(faseCompleteTimes));
 }
 
 function loadChecklistState() {
+    if (!currentUserId) return;
     const saved = localStorage.getItem(`expor_${currentUserId}_checklists`);
     if(saved) faseChecklists = JSON.parse(saved);
     const savedStart = localStorage.getItem(`expor_${currentUserId}_startTimes`);
@@ -249,16 +341,6 @@ function isFaseComplete(fase) {
     return faseChecklists[fase] && faseChecklists[fase].every(v => v === true);
 }
 
-function markFaseComplete(fase) {
-    if (!isFaseComplete(fase)) return;
-    if (!faseCompleteTimes[fase]) {
-        faseCompleteTimes[fase] = new Date().toISOString();
-        saveChecklistState();
-        saveToCloud();
-        showToast(`🎉 Fase ${fase} selesai dalam ${calculateDuration(fase)} menit!`);
-    }
-}
-
 function calculateDuration(fase) {
     if (faseStartTimes[fase] && faseCompleteTimes[fase]) {
         const start = new Date(faseStartTimes[fase]);
@@ -268,7 +350,6 @@ function calculateDuration(fase) {
     return 0;
 }
 
-// Render roadmap (sama seperti sebelumnya, ditambah tracker waktu)
 function renderPhasesGrid() {
     const phases = ['Deal', 'Legalitas', 'Produk & Dok', 'Logistik', 'Kepabeanan', 'Pengiriman', 'Pasca Kirim'];
     const container = document.getElementById('phasesGrid');
@@ -279,11 +360,11 @@ function renderPhasesGrid() {
         let activeClass = (currentFase === faseNum) ? 'active' : '';
         let icon = complete ? '✅' : (faseNum===currentFase ? '📍' : '📌');
         let duration = calculateDuration(faseNum);
-        let durationText = duration > 0 ? `<span style="font-size:10px;">⏱️ ${duration}mnt</span>` : '';
+        let durationText = duration > 0 ? `<span style="font-size:10px; display:block; margin-top:4px;">⏱️ ${duration} mnt</span>` : '';
         return `<div class="phase-card ${activeClass}" data-fase="${faseNum}">
                     <div class="phase-icon">${icon}</div>
-                    <strong>Fase ${faseNum}</strong><br>${name}<br>${durationText}
-                    ${complete ? '<span style="display:block; font-size:11px; color:green;">✓ selesai</span>' : ''}
+                    <strong>Fase ${faseNum}</strong><br>${name}${durationText}
+                    ${complete ? '<span style="display:block; font-size:11px; color:#1a8f7a; margin-top:4px;">✓ selesai</span>' : ''}
                 </div>`;
     }).join('');
     document.querySelectorAll('.phase-card').forEach(el => {
@@ -304,7 +385,20 @@ function renderPhaseDetail(fase) {
     };
     const items = checklistItems[fase] || checklistItems[1];
     const currentChecks = faseChecklists[fase];
-    let checklistHtml = `<h3><i class="fas fa-clipboard-list"></i> Fase ${fase} — Centang yang sudah kamu lakukan</h3>`;
+    
+    let durationInfo = '';
+    if (calculateDuration(fase) > 0) {
+        durationInfo = `<div style="background:#10b98120; padding:12px; border-radius:20px; margin-bottom:16px;"><i class="fas fa-hourglass-half"></i> ✅ Fase selesai dalam ${calculateDuration(fase)} menit</div>`;
+    } else if (faseStartTimes[fase]) {
+        const start = new Date(faseStartTimes[fase]);
+        const now = new Date();
+        const elapsed = Math.round((now - start) / (1000 * 60));
+        durationInfo = `<div style="background:#fef3c7; padding:12px; border-radius:20px; margin-bottom:16px;"><i class="fas fa-play-circle"></i> ⏳ Fase sedang berjalan (${elapsed} menit)</div>`;
+    } else {
+        durationInfo = `<div style="background:#e0f2f5; padding:12px; border-radius:20px; margin-bottom:16px;"><i class="fas fa-info-circle"></i> Centang checklist pertama untuk mulai menghitung waktu</div>`;
+    }
+    
+    let checklistHtml = `<h3><i class="fas fa-clipboard-list"></i> Fase ${fase} — Centang yang sudah kamu lakukan</h3>${durationInfo}`;
     items.forEach((item, idx) => {
         let isChecked = currentChecks[idx];
         checklistHtml += `<div class="checklist-item" data-fase="${fase}" data-idx="${idx}">
@@ -312,8 +406,7 @@ function renderPhaseDetail(fase) {
                             <label>${item}</label>
                           </div>`;
     });
-    let durationInfo = calculateDuration(fase) > 0 ? `<div style="background:#e0f2f1; padding:12px; border-radius:20px; margin-bottom:16px;"><i class="fas fa-hourglass-half"></i> Fase ini memakan waktu: ${calculateDuration(fase)} menit</div>` : '<div style="background:#fff3e0; padding:12px; border-radius:20px; margin-bottom:16px;"><i class="fas fa-play-circle"></i> Fase dimulai saat pertama kali checklist dicentang</div>';
-    panel.innerHTML = durationInfo + checklistHtml;
+    panel.innerHTML = checklistHtml;
     
     document.querySelectorAll('#phaseDetailPanel .checklist-item input').forEach(cb => {
         cb.addEventListener('change', (e) => {
@@ -322,125 +415,226 @@ function renderPhaseDetail(fase) {
             const idx = parseInt(parent.dataset.idx);
             faseChecklists[faseNum][idx] = cb.checked;
             
-            // Jika checklist pertama kali dicentang, catat start time
             if (cb.checked && !faseStartTimes[faseNum]) {
                 faseStartTimes[faseNum] = new Date().toISOString();
-                showToast(`⏰ Waktu mulai Fase ${faseNum} dicatat`);
+                showToast(`⏰ Waktu mulai Fase ${faseNum} dicatat`, "info");
+            }
+            
+            if (isFaseComplete(faseNum) && !faseCompleteTimes[faseNum]) {
+                faseCompleteTimes[faseNum] = new Date().toISOString();
+                showToast(`🎉 Selamat! Fase ${faseNum} selesai dalam ${calculateDuration(faseNum)} menit!`, "success");
+                saveToCloud();
             }
             
             saveChecklistState();
-            markFaseComplete(faseNum);
             renderPhasesGrid();
             renderPhaseDetail(currentFase);
         });
     });
 }
 
-// ==================== INISIALISASI & LOGIN ====================
-function loginWithUserId(userId) {
-    currentUserId = userId;
-    loadChecklistState();
-    document.getElementById('displayUserId').innerText = userId;
-    document.getElementById('roadmapUserId').innerText = userId;
-    document.getElementById('userModal').style.display = 'none';
-    
-    // Coba load dari cloud (jika ada)
-    loadFromCloud(userId);
-    renderPhasesGrid();
-    renderPhaseDetail(currentFase);
-    showToast(`Selamat datang, ${userId}! Progresmu tersimpan di cloud.`);
-}
-
-function showToast(msg) {
+function showToast(msg, type = "info") {
     let toast = document.createElement('div');
     toast.className = 'toast-msg';
     toast.innerText = msg;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
+    setTimeout(() => toast.remove(), 3000);
 }
 
-// Event listeners
-document.getElementById('newUserBtn').onclick = () => {
-    const newId = generateUserId();
-    loginWithUserId(newId);
-};
-document.getElementById('loadUserBtn').onclick = () => {
-    const inputId = document.getElementById('userIdInput').value.trim();
+function updateAnalytics() {
+    const container = document.getElementById('analyticsContent');
+    if (!container) return;
+    
+    let completedFases = [];
+    let totalDuration = 0;
+    for (let i = 1; i <= 7; i++) {
+        if (isFaseComplete(i)) {
+            completedFases.push(i);
+            totalDuration += calculateDuration(i);
+        }
+    }
+    
+    const hardestFase = (() => {
+        let maxDur = 0, maxFase = 0;
+        for (let i = 1; i <= 7; i++) {
+            let dur = calculateDuration(i);
+            if (dur > maxDur && dur > 0) { maxDur = dur; maxFase = i; }
+        }
+        return maxFase;
+    })();
+    
+    const faseNames = ['Deal', 'Legalitas', 'Produk & Dok', 'Logistik', 'Kepabeanan', 'Pengiriman', 'Pasca Kirim'];
+    
+    container.innerHTML = `
+        <div style="display: grid; gap: 20px;">
+            <div style="background: linear-gradient(135deg, #0f6b7a10, #1a8f7a10); border-radius: 24px; padding: 24px; text-align: center;">
+                <div style="font-size: 3rem;">📊</div>
+                <div style="font-size: 2rem; font-weight: 700;">${completedFases.length}/7</div>
+                <div>Fase Selesai</div>
+                <div style="margin-top: 8px; font-size: 0.85rem;">Total waktu: ${totalDuration} menit</div>
+            </div>
+            ${hardestFase > 0 ? `<div style="background: #fef3c7; border-radius: 24px; padding: 20px;">
+                <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                <strong>Fase Tersulit:</strong> ${faseNames[hardestFase-1]} (${calculateDuration(hardestFase)} menit)
+                <div style="font-size: 0.85rem; margin-top: 8px;">Fase ini memakan waktu paling lama. Perlu pendalaman?</div>
+            </div>` : ''}
+            <div style="background: #e0f2f5; border-radius: 24px; padding: 20px;">
+                <i class="fas fa-tachometer-alt"></i>
+                <strong>Rekomendasi:</strong><br>
+                ${completedFases.length === 0 ? 'Mulai centang checklist di Fase 1!' : 
+                  completedFases.length === 7 ? '🎉 Selamat! Kamu sudah menyelesaikan semua fase ekspor!' :
+                  `Lanjutkan ke Fase ${completedFases.length + 1} untuk menyelesaikan proses ekspor.`}
+            </div>
+            <button id="exportReportBtn" class="btn-outline" style="width:100%;"><i class="fas fa-download"></i> Ekspor Laporan (JSON)</button>
+        </div>
+    `;
+    
+    document.getElementById('exportReportBtn')?.addEventListener('click', () => {
+        const report = {
+            userId: currentUserId,
+            generatedAt: new Date().toISOString(),
+            completedFases: completedFases,
+            totalDurationMinutes: totalDuration,
+            faseDetails: {}
+        };
+        for (let i = 1; i <= 7; i++) {
+            report.faseDetails[i] = {
+                completed: isFaseComplete(i),
+                durationMinutes: calculateDuration(i),
+                startTime: faseStartTimes[i],
+                completeTime: faseCompleteTimes[i]
+            };
+        }
+        const dataStr = JSON.stringify(report, null, 2);
+        const blob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `expor_report_${currentUserId}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Laporan terdownload!", "success");
+    });
+}
+
+// ==================== LOGIN & INIT ====================
+function loginWithUserId(userId) {
+    currentUserId = userId;
+    loadChecklistState();
+    document.getElementById('displayUserId').innerHTML = `<i class="fas fa-user-circle"></i> ${userId}`;
+    document.getElementById('roadmapUserId').innerText = userId;
+    document.getElementById('userModal').style.display = 'none';
+    
+    loadFromCloud(userId).then(() => {
+        renderPhasesGrid();
+        renderPhaseDetail(currentFase);
+        if (typeof updateAnalytics === 'function') updateAnalytics();
+    });
+}
+
+// ==================== EVENT LISTENERS ====================
+document.getElementById('newUserBtn')?.addEventListener('click', () => loginWithUserId(generateUserId()));
+document.getElementById('loadUserBtn')?.addEventListener('click', () => {
+    const inputId = document.getElementById('userIdInput')?.value.trim();
     if(inputId) loginWithUserId(inputId);
-    else showToast("Masukkan User ID dulu!");
-};
-document.getElementById('logoutBtnHome').onclick = () => {
+    else showToast("Masukkan User ID dulu!", "warning");
+});
+document.getElementById('logoutBtnHome')?.addEventListener('click', () => {
     currentUserId = null;
     document.getElementById('userModal').style.display = 'flex';
-};
-document.getElementById('goToRoadmapHome').onclick = () => {
-    if(currentUserId) document.querySelector('[data-page="roadmap"]').click();
-    else showToast("Login dulu ya!");
-};
-document.getElementById('saveProgressBtn').onclick = () => saveToCloud();
-document.getElementById('nextPhaseRoadmap').onclick = () => {
+});
+document.getElementById('goToRoadmapHome')?.addEventListener('click', () => {
+    if(currentUserId) document.querySelector('[data-page="roadmap"]')?.click();
+    else showToast("Login dulu ya!", "warning");
+});
+document.getElementById('saveManualBtn')?.addEventListener('click', () => saveToCloud());
+document.getElementById('saveProgressBtn')?.addEventListener('click', () => saveToCloud());
+document.getElementById('nextPhaseRoadmap')?.addEventListener('click', () => {
     if(isFaseComplete(currentFase)) {
-        if(currentFase < 7) { currentFase++; renderPhasesGrid(); renderPhaseDetail(currentFase); }
-        else showToast("🎉 Semua fase selesai!");
-    } else showToast("Selesaikan semua checklist dulu!");
-};
+        if(currentFase < 7) { currentFase++; renderPhasesGrid(); renderPhaseDetail(currentFase); showToast(`Pindah ke Fase ${currentFase}`, "info"); }
+        else showToast("🎉 Semua fase selesai! Selamat menjadi eksportir!", "success");
+    } else showToast("Selesaikan semua checklist di fase ini dulu!", "warning");
+});
 
-// Navigasi halaman
-const pages = ['homePage', 'roadmapPage', 'incotermsPage', 'doccheckPage', 'hscodePage'];
+// NAVIGATION
+const pages = ['home', 'roadmap', 'incoterms', 'doccheck', 'hscode', 'analytics'];
 document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        if(!currentUserId && btn.dataset.page !== 'home') { showToast("Login dulu untuk akses fitur!"); return; }
         const pageId = btn.dataset.page;
-        pages.forEach(p => document.getElementById(p).classList.add('hidden-page'));
-        document.getElementById(pageId + 'Page').classList.remove('hidden-page');
+        if (!currentUserId && pageId !== 'home') { showToast("Login dulu untuk akses fitur!", "warning"); return; }
+        pages.forEach(p => document.getElementById(p + 'Page')?.classList.add('hidden-page'));
+        document.getElementById(pageId + 'Page')?.classList.remove('hidden-page');
         document.querySelectorAll('.nav-btn').forEach(l => l.classList.remove('active'));
         btn.classList.add('active');
-        if(pageId === 'roadmap') { renderPhasesGrid(); renderPhaseDetail(currentFase); }
+        if (pageId === 'roadmap') { renderPhasesGrid(); renderPhaseDetail(currentFase); }
+        if (pageId === 'analytics') updateAnalytics();
     });
 });
 
-// Incoterms
+// INCOTERMS
 const incotermDb = {
-    EXW: { seller:"Semua biaya dari gudangmu", buyer:"Seluruh risiko & biaya angkut", desc:"Buyer menjemput sendiri." },
-    FOB: { seller:"Sampai barang naik kapal asal", buyer:"Setelah kapal berlayar", desc:"Paling aman untuk pemula." },
-    CIF: { seller:"Biaya + asuransi sampai tujuan", buyer:"Setelah sampai pelabuhan", desc:"Kamu bayar ongkir & asuransi." },
-    CFR: { seller:"Biaya sampai tujuan (tanpa asuransi)", buyer:"Asuransi ditanggung buyer", desc:"Tanpa asuransi." }
+    EXW: { seller: "Barang di gudang kamu, pembeli urus semuanya", buyer: "Semua biaya & risiko dari lokasi kamu", desc: "Pembeli menjemput sendiri. Risiko minimal untukmu." },
+    FOB: { seller: "Sampai barang naik kapal di pelabuhan asal", buyer: "Setelah kapal berlayar, semua biaya & risiko buyer", desc: "✨ PALING AMAN UNTUK PEMULA! Risiko terbatas sampai pelabuhan asal." },
+    CIF: { seller: "Biaya + asuransi sampai pelabuhan tujuan", buyer: "Setelah sampai pelabuhan tujuan", desc: "Kamu bayar ongkir & asuransi. Hati-hati karena risiko lebih besar." },
+    CFR: { seller: "Biaya freight sampai pelabuhan tujuan (tanpa asuransi)", buyer: "Asuransi ditanggung buyer", desc: "Sama seperti CIF tapi tanpa asuransi." },
+    FCA: { seller: "Barang diserahkan ke carrier di lokasi yang disepakati", buyer: "Setelah diserahkan ke carrier", desc: "Flexible, bisa digunakan untuk berbagai moda transportasi." }
 };
 function updateIncoterm(term) {
-    document.getElementById('sellerRiskText').innerText = incotermDb[term].seller;
-    document.getElementById('buyerRiskText').innerText = incotermDb[term].buyer;
+    document.getElementById('sellerRiskText').innerHTML = incotermDb[term].seller;
+    document.getElementById('buyerRiskText').innerHTML = incotermDb[term].buyer;
     document.getElementById('incotermSelected').innerHTML = term;
     document.getElementById('incotermDetail').innerHTML = incotermDb[term].desc;
 }
-document.querySelectorAll('.incotermPick').forEach(btn => btn.onclick = () => updateIncoterm(btn.dataset.term));
+document.querySelectorAll('.incotermPick').forEach(btn => btn.addEventListener('click', () => updateIncoterm(btn.dataset.term)));
 updateIncoterm('FOB');
 
-// Dokumen Checker
+// DOKUMEN CHECKER
 document.getElementById('checkDocBtnDetail')?.addEventListener('click', () => {
-    let name = document.getElementById('docName').value;
-    let qty = parseFloat(document.getElementById('docQty').value);
-    let weight = parseFloat(document.getElementById('docWeight').value);
-    let value = parseFloat(document.getElementById('docValue').value);
+    let name = document.getElementById('docName')?.value.trim() || "";
+    let qty = parseFloat(document.getElementById('docQty')?.value);
+    let weight = parseFloat(document.getElementById('docWeight')?.value);
+    let value = parseFloat(document.getElementById('docValue')?.value);
     if(!name || isNaN(qty) || isNaN(weight) || isNaN(value)) {
-        document.getElementById('docResultPanel').innerHTML = '<div>⚠️ Lengkapi semua data.</div>';
+        document.getElementById('docResultPanel').innerHTML = '<div style="background:#fee2e2; padding:20px; border-radius:24px;">⚠️ Lengkapi semua data terlebih dahulu.</div>';
         return;
     }
     let ratio = weight/qty;
-    document.getElementById('docResultPanel').innerHTML = `<div class="card-modern">📦 ${name}<br>⚖️ Rasio: ${ratio.toFixed(2)} kg/unit<br>💡 Pastikan data SAMA di semua dokumen!</div>`;
+    let status = (ratio > 0.1 && ratio < 1000) ? 'wajar ✅' : 'periksa ulang ⚠️';
+    document.getElementById('docResultPanel').innerHTML = `<div style="background:#e0f2f1; padding:20px; border-radius:24px;">
+        <strong>📦 ${name}</strong><br>
+        📊 ${qty} unit | ${weight} kg | $${value}<br>
+        ⚖️ Rasio berat/unit: ${ratio.toFixed(2)} kg → ${status}<br>
+        <hr style="margin: 12px 0;">
+        💡 <strong>Pastikan:</strong> Nama, Qty, Berat, Nilai SAMA PERSIS di Invoice, Packing List, dan PEB!
+    </div>`;
 });
 
-// AI HS Code
+// AI HS CODE
 document.getElementById('aiSearchBtn')?.addEventListener('click', () => {
-    let input = document.getElementById('aiHsInput').value;
-    let result = "Coba spesifikkan bahan baku (contoh: kopi bubuk, udang beku)";
-    if(input.includes("kopi")) result = "HS Code: 0901.21 - Bebas ekspor, perlu karantina";
-    else if(input.includes("udang")) result = "HS Code: 0306.17 - Perlu sertifikat kesehatan";
-    else if(input.includes("keripik")) result = "HS Code: 2008.19 - Bebas ekspor";
-    document.getElementById('aiResult').innerHTML = `<div class="card-modern">🔎 ${result}<br><a href="https://insw.go.id/intr" target="_blank">Cek resmi di INSW ↗️</a></div>`;
+    let input = document.getElementById('aiHsInput')?.value.toLowerCase() || "";
+    if (!input) { document.getElementById('aiResult').innerHTML = '<div class="card-modern">Masukkan nama barang terlebih dahulu.</div>'; return; }
+    
+    let result = { hsCode: "????", status: "Perlu verifikasi", advice: "Cek manual di portal resmi" };
+    if (input.includes("kopi")) result = { hsCode: "0901.11 / 0901.21", status: "Bebas ekspor", advice: "Perlu karantina untuk ekspor" };
+    else if (input.includes("udang")) result = { hsCode: "0306.17", status: "Bebas dengan pengawasan", advice: "Wajib sertifikat kesehatan dari Karantina" };
+    else if (input.includes("kayu") || input.includes("furniture")) result = { hsCode: "4409.29 / 9403.60", status: "Dibatasi", advice: "Perlu V-Legal & laporan ekspor" };
+    else if (input.includes("keripik") || input.includes("pisang")) result = { hsCode: "2008.19", status: "Bebas ekspor", advice: "Pastikan kemasan sesuai standar negara tujuan" };
+    else if (input.includes("teh")) result = { hsCode: "0902.40", status: "Bebas ekspor", advice: "Perhatikan aturan karantina" };
+    else if (input.includes("baju") || input.includes("pakaian")) result = { hsCode: "6109.10 / 6204.42", status: "Bebas dengan kuota", advice: "Cek aturan kuota tekstil" };
+    else if (input.includes("makanan") || input.includes("olahan")) result = { hsCode: "2106.90", status: "Bebas bersyarat", advice: "Perlu izin BPOM & karantina" };
+    
+    document.getElementById('aiResult').innerHTML = `<div class="card-modern" style="border-left: 4px solid #1a8f7a;">
+        <i class="fas fa-robot"></i> <strong>Hasil Estimasi AI</strong><br>
+        📌 HS Code: <code style="font-size:1.2rem;">${result.hsCode}</code><br>
+        📌 Status Lartas: ${result.status}<br>
+        📌 Saran: ${result.advice}<br>
+        <hr>
+        🔗 <a href="https://insw.go.id/intr?search=${encodeURIComponent(input)}" target="_blank">Cek langsung di INSW ↗️</a>
+    </div>`;
 });
 
-// Tampilkan modal jika belum login
-if(!currentUserId) document.getElementById('userModal').style.display = 'flex';
+// TAMPILKAN MODAL
+if (!currentUserId) document.getElementById('userModal').style.display = 'flex';
 </script>
 </body>
 </html>
