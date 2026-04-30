@@ -150,15 +150,6 @@
             <button id="checkDocBtnDetail" class="btn-primary" style="width:100%;"><i class="fas fa-check-circle"></i> Periksa Konsistensi</button>
             <div id="docResultPanel" style="margin-top: 28px;"></div>
         </div>
-        <div class="card-modern" style="margin-top: 24px;">
-            <h4><i class="fas fa-tips"></i> Tips Penting</h4>
-            <ul style="margin-left: 20px; margin-top: 12px; color: #475569;">
-                <li>Nama barang harus sama persis di semua dokumen</li>
-                <li>Jumlah dan berat harus sinkron</li>
-                <li>Nilai jangan beda antara Invoice dan PEB</li>
-                <li>Perbedaan sekecil apapun bisa menyebabkan penundaan ekspor!</li>
-            </ul>
-        </div>
     </div>
 
     <!-- AI HS CODE -->
@@ -196,7 +187,8 @@
 <script>
 // ==================== KONFIGURASI ====================
 // ⚠️ GANTI DENGAN URL DEPLOYMENT GOOGLE APPS SCRIPT KAMU! ⚠️
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFqZa9bCYM6gR20NYXud-8hZWFS_bvXFf11ckNCYPl-TSe2iknms6tfIzp0AmooRmWOw/exec";
+const ORIGINAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBa7RLsov9-rVwMGSq6tjOZzmhUieLAcG8Vk8zZgP52ULVP9jDs1nrIHo--9BZ8qGWOQ/exec";
+const PROXY_URL = "https://corsproxy.io/?";
 
 // ==================== GLOBAL STATE ====================
 let currentUserId = null;
@@ -205,10 +197,11 @@ let faseStartTimes = {1:null,2:null,3:null,4:null,5:null,6:null,7:null};
 let faseCompleteTimes = {1:null,2:null,3:null,4:null,5:null,6:null,7:null};
 let currentFase = 1;
 
-// ==================== FUNGSI GOOGLE SHEETS API (JSONP) ====================
-function callGoogleAppsScript(action, data = {}, userIdParam = null) {
+// ==================== FUNGSI GOOGLE SHEETS API (Via Proxy JSONP) ====================
+async function callGoogleAppsScript(action, data = {}, userIdParam = null) {
     return new Promise((resolve, reject) => {
         const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        
         const params = new URLSearchParams();
         params.append('callback', callbackName);
         params.append('action', action);
@@ -233,16 +226,42 @@ function callGoogleAppsScript(action, data = {}, userIdParam = null) {
             params.append('userId', userIdParam || data.userId || currentUserId || '');
         }
         
-        const script = document.createElement('script');
-        script.src = `${SCRIPT_URL}?${params.toString()}`;
-        script.onerror = () => { delete window[callbackName]; document.body.removeChild(script); reject(new Error('Network error')); };
+        const targetUrl = `${ORIGINAL_SCRIPT_URL}?${params.toString()}`;
+        const proxyUrl = `${PROXY_URL}${encodeURIComponent(targetUrl)}`;
         
-        window[callbackName] = (response) => {
+        console.log("📡 JSONP Request via Proxy:", proxyUrl);
+        
+        const script = document.createElement('script');
+        script.src = proxyUrl;
+        script.onerror = (err) => {
+            console.error("❌ Script error:", err);
             delete window[callbackName];
             document.body.removeChild(script);
-            resolve(response);
+            reject(new Error('Gagal konek ke server. Cek koneksi internet dan URL deployment.'));
         };
+        
+        window[callbackName] = (response) => {
+            console.log("✅ Response:", response);
+            delete window[callbackName];
+            document.body.removeChild(script);
+            
+            if (response && response.success === true) {
+                resolve(response);
+            } else {
+                reject(new Error(response?.error || "Unknown error"));
+            }
+        };
+        
         document.body.appendChild(script);
+        
+        setTimeout(() => {
+            if (window[callbackName]) {
+                console.error("⏰ Timeout!");
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('Timeout - Server tidak merespon setelah 15 detik'));
+            }
+        }, 15000);
     });
 }
 
@@ -278,7 +297,8 @@ async function saveToCloud() {
             return false;
         }
     } catch (error) {
-        showToast("❌ Koneksi gagal. Cek URL deployment!", "error");
+        console.error("Save error:", error);
+        showToast("❌ " + error.message, "error");
         return false;
     }
 }
@@ -308,7 +328,8 @@ async function loadFromCloud(userId) {
             return false;
         }
     } catch (error) {
-        showToast("❌ Gagal load data.", "error");
+        console.error("Load error:", error);
+        showToast("❌ " + error.message, "error");
         return false;
     }
 }
@@ -454,14 +475,12 @@ function updateAnalytics() {
         }
     }
     
-    const hardestFase = (() => {
-        let maxDur = 0, maxFase = 0;
-        for (let i = 1; i <= 7; i++) {
-            let dur = calculateDuration(i);
-            if (dur > maxDur && dur > 0) { maxDur = dur; maxFase = i; }
-        }
-        return maxFase;
-    })();
+    let hardestFase = 0;
+    let maxDur = 0;
+    for (let i = 1; i <= 7; i++) {
+        let dur = calculateDuration(i);
+        if (dur > maxDur && dur > 0) { maxDur = dur; hardestFase = i; }
+    }
     
     const faseNames = ['Deal', 'Legalitas', 'Produk & Dok', 'Logistik', 'Kepabeanan', 'Pengiriman', 'Pasca Kirim'];
     
